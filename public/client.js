@@ -81,6 +81,11 @@ function scientificFunction(func) {
                 var tanInput = isDegrees ? toRadians(currentValue) : currentValue;
                 result = Math.tan(tanInput);
                 break;
+            case 'tan':
+                var tanInput = isDegrees ? toRadians(currentValue) : currentValue;
+                result = Math.tan(tanInput);
+                if (!isFinite(result)) setError("Result too large");
+                break;
             case 'sqrt':
                 if (currentValue < 0) {
                     setError("Can't sqrt negative");
@@ -302,59 +307,31 @@ function calculateLocal(operand1, operand2, operation) {
                 return null;
             }
             return a / b;
+        case '^':
+            // Edge cases
+            if (a === 0 && b === 0) { setError("0^0 is undefined"); return null; }
+            if (a < 0 && !Number.isInteger(b)) { setError("Negative base with fractional exponent"); return null; }
+            var result = Math.pow(a, b);
+            if (!isFinite(result)) { setError("Result too large"); return null; }
+            return result;
         default:
             return null;
     }
 }
 
 function calculate(operand1, operand2, operation) {
-    // Handle basic operations on client-side for instant feedback
-    if (['+', '-', '*', '/'].includes(operation)) {
+    if (['+', '-', '*', '/', '^'].includes(operation)) {
         var result = calculateLocal(operand1, operand2, operation);
         if (result !== null) {
             setValue(result);
             addToHistory(operand1, operation, operand2, result);
         }
-        // Note: if result is null, error is already displayed by setError
-        return;
+        return; // calculation done
     }
 
-    // Use server for complex operations (power, etc.)
-    var uri = location.origin + "/arithmetic";
-
-    switch (operation) {
-        case '^':
-            uri += "?operation=power";
-            break;
-        default:
-            setError();
-            return;
-    }
-
-    uri += "&operand1=" + encodeURIComponent(operand1.toString());
-    uri += "&operand2=" + encodeURIComponent(operand2.toString());
-
-    setLoading(true);
-
-    var http = new XMLHttpRequest();
-    http.open("GET", uri, true);
-    http.onload = function () {
-        setLoading(false);
-
-        if (http.status == 200) {
-            var response = JSON.parse(http.responseText);
-            setValue(response.result);
-            addToHistory(operand1, operation, operand2, response.result);
-        } else {
-            setError();
-        }
-    };
-    http.onerror = function () {
-        setLoading(false);
-        setError();
-    };
-    http.send(null);
+    setError();
 }
+
 
 function clearPressed() {
     setValue(0);

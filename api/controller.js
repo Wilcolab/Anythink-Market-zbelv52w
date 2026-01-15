@@ -9,15 +9,33 @@ exports.calculate = function(req, res) {
     res.status(400);
     res.json({ error: err.message });
   });
-
   // TODO: Add operator
   var operations = {
-    'add':      function(a, b) { return Number(a) + Number(b) },
-    'subtract': function(a, b) { return a - b },
-    'multiply': function(a, b) { return a * b },
+    'add':      function(a, b) { return Number(a) + Number(b); },
+    'subtract': function(a, b) { return Number(a) - Number(b); },
+    'multiply': function(a, b) { return Number(a) * Number(b); },
     'divide':   function(a, b) { return a / b },
-    'power':    function(a, b) {return Math.pow(a, b) },
-  };
+    'power':    function(a, b) {
+        a = Number(a);
+        b = Number(b);
+        // Edge case: 0^0
+        if (a === 0 && b === 0) {
+            throw new Error("0^0 is undefined");
+        }
+        // Edge case: negative base with fractional exponent
+        if (a < 0 && !Number.isInteger(b)) {
+            throw new Error("Negative base with fractional exponent results in complex number");
+        }
+        // Calculate power
+        var result = Math.pow(a, b);
+        // Edge case: very large numbers
+        if (!isFinite(result)) {
+            throw new Error("Result is too large");
+        }
+
+        return result;
+    },
+};
 
   if (!req.query.operation) {
     throw new Error("Unspecified operation");

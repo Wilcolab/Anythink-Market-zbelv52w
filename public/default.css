@@ -1,9 +1,41 @@
+:root {
+    --bg-primary: #1b4076;
+    --bg-secondary: #2a5a99;
+    --text-primary: #000;
+    --text-secondary: #666;
+    --button-bg: #d5d5d5;
+    --button-text: #000;
+    --display-bg: #b0b0b0;
+    --display-bg-alt: #9b9b9b;
+    --display-text: #666;
+    --history-bg: #f0f0f0;
+    --history-text: #000;
+    --history-border: #ddd;
+}
+
+body.dark-theme {
+    --bg-primary: #1b4076;
+    --bg-secondary: #2a5a99;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --button-bg: #404040;
+    --button-text: #e0e0e0;
+    --display-bg: #2d2d2d;
+    --display-bg-alt: #1f1f1f;
+    --display-text: #ffffff;
+    --history-bg: #2d2d2d;
+    --history-text: #e0e0e0;
+    --history-border: #444;
+}
+
 BODY {
     height: 100%;
     width: 100%;
     padding: 0;
     margin: 0;
-    background-color: #1b4076;
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease;
+    color: var(--text-primary);
 }
 
 @media screen and (min-device-width: 500px) and (min-device-height: 1024px) {
@@ -22,6 +54,36 @@ BODY {
     }
 }
 
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: none;
+    border: 2px solid var(--button-bg);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--button-bg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
 .container {
     min-width: 250px;
     min-height: 531px;
@@ -33,6 +95,7 @@ BODY {
     background-size: 300px 531px;
     background-repeat: no-repeat;
     background-position: center top;
+    transition: all 0.3s ease;
 }
 
 #results {
@@ -45,8 +108,26 @@ BODY {
     position: relative;
 }
 
+#calculation-display {
+    background-color: var(--display-bg);
+    width: 226px;
+    height: 25px;
+    margin: 0;
+    padding: 0 12px;
+    position: absolute;
+    border: 0;
+    left: 0;
+    top: 5px;
+    font-family: system-ui;
+    font-size: 14px;
+    text-align: right;
+    color: var(--display-text);
+    line-height: 25px;
+    transition: all 0.3s ease;
+}
+
 #result {
-    background-color: #9b9b9b;
+    background-color: var(--display-bg-alt);
     width: 226px;
     height: 63px;
     margin: 0;
@@ -58,6 +139,8 @@ BODY {
     font-family: system-ui;
     font-size: 25px;
     text-align: right;
+    color: var(--display-text);
+    transition: all 0.3s ease;
 }
 
 /*BUTTON {
@@ -99,6 +182,10 @@ BODY {
     color: rgba(255, 255, 255, 0);
     text-indent: -9999px;
     z-index: 1;
+}
+
+body.dark-theme .resultchar {
+    filter: invert(1) brightness(1.1);
 }
 
 .digit0 {
@@ -163,6 +250,36 @@ BODY {
     position: absolute;
 }
 
+.mode-toggle {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+    justify-content: center;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 6px 10px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 2px solid var(--button-bg);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+    opacity: 0.8;
+}
+
+.mode-btn.active {
+    background-color: var(--display-text);
+    color: var(--bg-primary);
+    border-color: var(--display-text);
+}
+
 .span-2 {
     grid-column: span 2;
 }
@@ -181,6 +298,155 @@ BODY {
     font-size: 1em;
     height: 45px;
     border: 1px solid black;
-    background-color: #d5d5d5;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     margin: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scientific-buttons .btn {
+    font-size: 0.85em;
+    height: 40px;
+    margin: 2px;
+    padding: 2px;
+}
+
+.btn:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.history-panel {
+    position: fixed;
+    right: -320px;
+    top: 0;
+    width: 300px;
+    max-height: 100vh;
+    background-color: var(--history-bg);
+    border: 1px solid var(--history-border);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.history-panel.show {
+    right: 0;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--button-bg);
+    border-bottom: 1px solid var(--history-border);
+}
+
+.history-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--history-text);
+}
+
+.history-clear-btn {
+    padding: 5px 10px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.history-clear-btn:hover {
+    background-color: #ff5252;
+}
+
+.history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.history-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--history-border);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    color: var(--history-text);
+}
+
+.history-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.history-item-text {
+    font-weight: 500;
+    color: var(--history-text);
+}
+
+.history-empty {
+    padding: 20px 15px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+.help-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 90px;   /* left of theme button */
+    z-index: 1001;
+    background: none;
+    border: 2px solid var(--button-bg);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.theme-toggle-btn {
+    z-index: 1001;
+}
+
+/* Popup */
+.help-popup {
+    position: fixed;
+    bottom: 80px;  /* opens above buttons */
+    right: 20px;
+    width: 270px;
+    background-color: var(--history-bg);
+    color: var(--history-text);
+    border: 1px solid var(--history-border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 1000;
+}
+
+.help-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+button:focus-visible {
+    outline: 3px solid #ffcc00;
+    outline-offset: 2px;
 }

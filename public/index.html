@@ -5,20 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <script src="client.js"></script>
   </head>
-  <body onLoad="setValue(0)">
+  <body onLoad="setValue(0); loadHistoryFromStorage(); loadTheme();">
     <div class="container">
       <div id="results">
+        <div id="calculation-display" class="calculation-display"></div>
         <div id="result"><span class="digit0">0</span></div>
       </div>
 
       <div id="loading" style="visibility:hidden"></div>
+      <div id="history-panel"
+     class="history-panel"
+     role="dialog"
+     aria-labelledby="history-title"
+     aria-hidden="true"
+     tabindex="0">
+        <div class="history-header">
+          <h3 id="history-title">History</h3>
+          <button class="history-clear-btn" onClick="clearHistory()">Clear</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </div>
 
       <div class="box">
+        <div class="mode-toggle">
+          <button class="mode-btn" id="basicModeBtn" onClick="switchMode('basic')" title="Basic Mode">Basic</button>
+          <button class="mode-btn active" id="scientificModeBtn" onClick="switchMode('scientific')" title="Scientific Mode">Sci</button>
+        </div>
         <div class="calculator">
-          <div class="calculator-buttons">
-            <button class="btn span-2"></button>
+          <div class="calculator-buttons" id="basicButtons">
+            <button class="btn" aria-label="Calculation history" onClick="toggleHistory()">&#128197;</button>
             <button class="btn" onClick="clearPressed()">C</button>
             <button class="btn" onClick="clearPressed()">CE</button>
+            <button class="btn"></button>
 
             <button class="btn" onClick="numberPressed(7)">7</button>
             <button class="btn" onClick="numberPressed(8)">8</button>
@@ -40,10 +58,80 @@
             <button class="btn" onClick="operationPressed('+')">+</button>
             <button class="btn" onClick="equalPressed()">=</button>
 
-            <!-- TODO: Buttons -->
+            <button class="btn" onClick="parenthesisPressed('(')">(</button>
+            <button class="btn" onClick="parenthesisPressed(')')">)</button>
+            <button class="btn" onClick="operationPressed('^')">^</button>
+            <button class="btn"></button>
+          </div>
+
+          <div class="calculator-buttons scientific-buttons" id="scientificButtons" style="display: none;">
+            <button class="btn" onClick="toggleHistory()">&#128197;</button>
+            <button class="btn" onClick="clearPressed()">C</button>
+            <button class="btn" onClick="clearPressed()">CE</button>
+            <button class="btn" title="Toggle Degrees / Radians" onClick="toggleDegRad()" id="degRadBtn">DEG</button>
+
+            <button class="btn" title="Sine of angle (DEG/RAD)" onClick="scientificFunction('sin')">sin</button>
+            <button class="btn" title="Cosine of angle (DEG/RAD)" onClick="scientificFunction('cos')">cos</button>
+            <button class="btn" title="Tangent of angle (DEG/RAD)" onClick="scientificFunction('tan')">tan</button>
+            <button class="btn" onClick="operationPressed('/')">&divide;</button>
+
+           <button class="btn" title="Square root" onClick="scientificFunction('sqrt')">√</button>
+           <button class="btn" title="Base-10 logarithm" onClick="scientificFunction('log')">log</button>
+            <button class="btn" title="Natural logarithm (ln)" onClick="scientificFunction('ln')">ln</button>
+            <button class="btn" onClick="operationPressed('*')">x</button>
+
+            <button class="btn" onClick="numberPressed(7)">7</button>
+            <button class="btn" onClick="numberPressed(8)">8</button>
+            <button class="btn" onClick="numberPressed(9)">9</button>
+            <button class="btn" onClick="operationPressed('-')">-</button>
+
+            <button class="btn" onClick="numberPressed(4)">4</button>
+            <button class="btn" onClick="numberPressed(5)">5</button>
+            <button class="btn" onClick="numberPressed(6)">6</button>
+            <button class="btn" title="Factorial (only integers)" onClick="scientificFunction('factorial')">x!</button>
+
+            <button class="btn" onClick="numberPressed(1)">1</button>
+            <button class="btn" onClick="numberPressed(2)">2</button>
+            <button class="btn" onClick="numberPressed(3)">3</button>
+            <button class="btn" onClick="operationPressed('+')">+</button>
+
+            <button class="btn" onClick="numberPressed(0)">0</button>
+            <button class="btn" onClick="decimalPressed()">.</button>
+           <button class="btn" title="Percentage (value ÷ 100)" onClick="scientificFunction('percent')">%</button>
+            <button class="btn" onClick="equalPressed()">=</button>
+
+            <button class="btn" onClick="parenthesisPressed('(')">(</button>
+            <button class="btn" onClick="parenthesisPressed(')')">)</button>
+            <button class="btn" onClick="operationPressed('^')">^</button>
+            <button class="btn" onClick="togglePlusMinus()">+/-</button>
           </div>
         </div>
       </div>
     </div>
+    <button class="help-btn"  aria-label="Open calculator help" onClick="toggleHelpPopup()" title="Calculator Help">❓</button>
+<button class="theme-toggle-btn" aria-label="Toggle dark or light theme" onClick="toggleTheme()" title="Toggle dark/light theme">🌙</button>
+<div id="help-popup"
+     class="help-popup"
+     tabindex="0"
+     role="dialog"
+     aria-labelledby="help-title"
+     aria-hidden="true"
+     aria-live="polite">
+  <strong>How to use scientific functions</strong>
+  <ul>
+    <li>Enter the number first, then press the function</li>
+    <li><b>Example:</b> sin(30) → type 30, then press sin</li>
+    <li>DEG/RAD affects trigonometric results</li>
+  </ul>
+
+  <strong>Examples</strong>
+  <ul>
+    <li>√16 → 16 then √</li>
+    <li>5! → 5 then x!</li>
+    <li>log(100) → 100 then log</li>
+  </ul>
+</div>
+
+
   </body>
 </html>
